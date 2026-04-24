@@ -1,0 +1,46 @@
+# --- [ Unity 필수 제외 ] ---
+/[Ll]ibrary/
+/[Tt]emp/
+/[Oo]bj/
+/[Bb]uild/
+/[Bb]uilds/
+/[Ll]ogs/
+/[Uu]ser[Ss]ettings/
+
+# 메모리 캡처 및 레코딩 
+/[Mm]emoryCaptures/
+/[Rr]ecordings/
+
+# 어드레서블/에셋번들 빌드 결과물 (필요시 포함하지만 보통은 제외)
+/[Aa]ssets/[Aa]ddressable[Aa]assets[Dd]ata/*/*.bin*
+/[Aa]ssets/[Ss]treamingAssets/aa.meta
+/[Aa]ssets/[Ss]treamingAssets/aa/*
+
+# --- [ JetBrains Rider / .idea ] ---
+.idea/
+# Rider가 생성하는 자동 플러그인 에셋
+/[Aa]ssets/Plugins/Editor/JetBrains*
+
+# --- [ Visual Studio / MS 관련 ] ---
+*.csproj
+*.unityproj
+*.sln
+*.suo
+*.tmp
+*.user
+*.userprefs
+*.pidb
+*.booproj
+*.svd
+*.pdb
+*.opendb
+*.VC.db
+*.vsconfig
+
+# --- [ OS 및 기타 시스템 ] ---
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# --- [ Crashlytics / 가끔 생기는 로그 ] ---
+crashlytics-build.properties
