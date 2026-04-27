@@ -7,6 +7,7 @@ public interface IInputProvider
     // 連続的な入力値
     Vector2 MoveDirection { get; }
     Vector2 LookDirection { get; }
+    bool IsSprinting { get; }
 
     // 単発的な event
     event Action OnJumpEvent;

@@ -12,6 +12,8 @@ public class InputReader : IInputProvider, IDisposable
     public Vector2 MoveDirection => _inputActions.Player.Move.ReadValue<Vector2>();
     public Vector2 LookDirection => _inputActions.Player.Look.ReadValue<Vector2>();
 
+    public bool IsSprinting => _inputActions.Player.Sprint.IsPressed();
+
     // アクションのイベント定義（単純なボータン達）
     public event Action OnJumpEvent;
     public event Action OnBasicAttackEvent;
