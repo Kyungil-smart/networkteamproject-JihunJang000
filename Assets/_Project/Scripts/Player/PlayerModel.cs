@@ -1,3 +1,4 @@
+//　データ監視
 public class PlayerModel
 {
     //固定データ
