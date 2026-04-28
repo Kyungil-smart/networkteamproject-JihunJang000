@@ -70,9 +70,18 @@
                     "initialStateCheck": false
                 },
                 {
+                    "name": "Sprint",
+                    "type": "Button",
+                    "id": "a4b7cb60-bccb-4946-9395-b36b292ea6e8",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
                     "name": "Dash",
                     "type": "Button",
-                    "id": "e062a32a-f928-48ba-ad54-1b3a0e4f7adc",
+                    "id": "48437488-301a-454c-8c0b-feae230fab02",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
@@ -258,17 +267,6 @@
                 },
                 {
                     "name": "",
-                    "id": "f7a8348c-2e4c-4b8f-9c8c-61db2a253b57",
-                    "path": "<Keyboard>/leftShift",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": ";KeyboardMouse",
-                    "action": "Dash",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
                     "id": "6bf562ce-b3af-4468-9bf0-bebea3257508",
                     "path": "<Keyboard>/space",
                     "interactions": "",
@@ -286,6 +284,50 @@
                     "processors": "",
                     "groups": ";Gamepad",
                     "action": "Jump",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "d1f2c62b-baff-4719-8322-c4385d372d34",
+                    "path": "<Mouse>/rightButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Sprint",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "fa74262e-2d68-498e-8460-c02b6e39ae85",
+                    "path": "",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Sprint",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "74ae37e2-c65d-4fb3-b99b-171d296aab5b",
+                    "path": "<Keyboard>/leftShift",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Dash",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "7f6fdffc-7618-4b21-b661-b9ce70a3f7a7",
+                    "path": "",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Dash",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
