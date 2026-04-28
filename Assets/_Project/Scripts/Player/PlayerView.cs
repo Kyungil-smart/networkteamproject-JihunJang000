@@ -28,31 +28,21 @@ public class PlayerView : MonoBehaviour
         transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed);
     }
     
-    public void SetMovingAnimation(bool isMoving)
-    {
-        _animator.SetBool("IsMoving", isMoving);
-    }
+    // 애니메이션 세팅
+    public void SetMovingAnimation(bool isMoving) => _animator.SetBool("IsMoving", isMoving);
+    public void SetSprintingAnimation(bool isSprinting) => _animator.SetBool("IsSprinting", isSprinting);
+    public void TriggerDashAnimation() => _animator.SetTrigger("DashTrigger");
+    public void SetGroundedState(bool isGrounded) => _animator.SetBool("IsGrounded", isGrounded);
+    // 애니메이션 속도 설정.
+    public void SetActionSpeed(float speedMultiplier) => _animator.SetFloat("ActionSpeed", speedMultiplier);
     
-    public void SetSprintingAnimation(bool isSprinting)
-    {
-        _animator.SetBool("IsSprinting", isSprinting);
-    }
+    public void TriggerAttack() => _animator.SetTrigger("AttackTrigger");
+    public void TriggerSkillQ() => _animator.SetTrigger("SkillQTrigger");
+    public void TriggerSkillE() => _animator.SetTrigger("SkillETrigger");
+    public void TriggerSkillR() => _animator.SetTrigger("SkillRTrigger");
     
-    public void TriggerDashAnimation()
-    {
-        _animator.SetTrigger("DashTrigger");
-    }
-
-    //
-    // public void TriggerJumpAnimation()
-    // {
-    //     _animator.SetTrigger("JumpTrigger");
-    // }
     
-    public void SetGroundedState(bool isGrounded)
-    {
-        _animator.SetBool("IsGrounded", isGrounded);
-    }
+    
 }
 
 

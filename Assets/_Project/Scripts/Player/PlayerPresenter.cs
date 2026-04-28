@@ -3,13 +3,15 @@ using VContainer;
 using VContainer.Unity;
 
 // MonoBehaviourを継承せず、VContainerのインターフェースでライフサイクルを管理
+
+// 플레이어 MVP의 Presenter. 네트워크 연결된 변수들 결합도를 낮춰서 네트워크 작업전 플레이어 작업을 하기 위함.
+// 움직임 계산해서 Model에 저장. View에 반영.
 public class PlayerPresenter : IStartable, ITickable
 {
     private readonly IInputProvider _input;
     private readonly PlayerView _view;
     private readonly PlayerModel _model;
-
-    // 変更: MonoBehaviourではないので [SerializeField] は不要です
+    
     private Transform _cameraTransform;
     
     // 必要な部品を外部から注入 (DI)
@@ -24,9 +26,13 @@ public class PlayerPresenter : IStartable, ITickable
     // GameLifetimeScopeのEntryPointで StartとTick使用可能
     public void Start() 
     {
-        // イベントの購読（Jump, Dash）
         _input.OnJumpEvent += WhenJump;
-        _input.OnDashEvent += WhenDash; // 追加: ダッシュイベント
+        _input.OnDashEvent += WhenDash; 
+        
+        _input.OnBasicAttackEvent += WhenAttack;
+        _input.OnSkillQEvent += WhenSkillQ;
+        _input.OnSkillEEvent += WhenSkillE;
+        _input.OnSkillREvent += WhenSkillR;
         
         _cameraTransform = Camera.main.transform;
     }
@@ -34,15 +40,18 @@ public class PlayerPresenter : IStartable, ITickable
     // VContainer使う時のupdate
     public void Tick()
     {
-        // 重力はダッシュ中・スタン中に関わらず常に計算する
+        // 重力はダッシュ中, スタン中に関わらず常に計算する
         ApplyGravity();
-
-        // 状態確認：ダッシュ中の場合は通常移動をスキップ
+        
+        UpdateTimers();
+        
         if (_model.IsDashing)
         {
             ApplyDashMovement();
             return;
         }
+        
+        
 
         // 通常の移動処理
         ApplyMovement();
@@ -68,16 +77,14 @@ public class PlayerPresenter : IStartable, ITickable
         
         Vector2 inputDir = _input.MoveDirection;
         
-        // 変更: Presenterのフィールド変数ではなく、ローカル変数として処理
         bool isMoving = inputDir.sqrMagnitude > 0.01f;
         
-        // 追加: スプリント判定 (移動中 かつ Shiftキー押下)
         bool isSprinting = isMoving && _input.IsSprinting;
         
         Vector3 camForward = _cameraTransform.forward;
         Vector3 camRight = _cameraTransform.right;
         
-        // Y軸の反映を消す（水平移動のみにする）
+        // Y軸の反映を消す
         camForward.y = 0f;
         camRight.y = 0f;
         camForward.Normalize(); // カメラの前方向
@@ -128,7 +135,6 @@ public class PlayerPresenter : IStartable, ITickable
     }
     private void WhenJump()
     {
-        // 追加: ダッシュ中はジャンプできないように制限
         if (_view.IsGrounded && !_model.IsDashing)
         {
             _model.VerticalVelocity = Mathf.Sqrt(_model.JumpHeight * -2f * _model.Gravity);
@@ -136,6 +142,73 @@ public class PlayerPresenter : IStartable, ITickable
         }
     }
     
+    // 스킬들 쿨타임 계산. 
+    private void UpdateTimers()
+    {
+        if (_model.ActionTimer > 0f) _model.ActionTimer -= Time.deltaTime;
+        
+        if (_model.AttackTimer > 0f) _model.AttackTimer -= Time.deltaTime;
+        if (_model.SkillQTimer > 0f) _model.SkillQTimer -= Time.deltaTime;
+        if (_model.SkillETimer > 0f) _model.SkillETimer -= Time.deltaTime;
+        if (_model.SkillRTimer > 0f) _model.SkillRTimer -= Time.deltaTime;
+    }
     
+    // --- 스킬 관련 수행 ---
+    private void WhenAttack()
+    {
+        // 쿨타임이 다 찼을 때만 실행
+        if (!_model.IsActing && _model.CanAttack) // 쿨타임 다찼을떄, 스킬 사용 중이 아닐떄
+        {
+            _model.AttackTimer = _model.AttackCooldown; // 타이머 리셋
+            _model.ActionTimer = _model.AttackIngameSpeed; //애니메이션 지속시간.동안 다른행동 불가.
+            
+            
+            float speed = _model.AttackAnimLength / _model.AttackIngameSpeed;
+            _view.SetActionSpeed(speed);
+            _view.TriggerAttack(); // 애니메이션 재생
+        }
+    }
+    
+    private void WhenSkillQ()
+    {
+        if (!_model.IsActing && _model.CanUseQ)
+        {
+            _model.SkillQTimer = _model.SkillQCooldown;
+            _model.ActionTimer = _model.SkillQIngameSpeed;
+            
+            float speed = _model.SkillQAnimLength / _model.SkillQIngameSpeed;
+            _view.SetActionSpeed(speed);
+            
+            _view.TriggerSkillQ();
+        }
+    }
+    
+    private void WhenSkillE()
+    {
+        if (!_model.IsActing && _model.CanUseE)
+        {
+            _model.SkillETimer = _model.SkillECooldown;
+            _model.ActionTimer = _model.SkillEIngameSpeed;
+            
+            float speed = _model.SkillEAnimLength / _model.SkillEIngameSpeed;
+            _view.SetActionSpeed(speed);
+            
+            _view.TriggerSkillE();
+        }
+    }
+    
+    private void WhenSkillR()
+    {
+        if (!_model.IsActing && _model.CanUseR)
+        {
+            _model.SkillRTimer = _model.SkillRCooldown;
+            _model.ActionTimer = _model.SkillRIngameSpeed;
+            
+            float speed = _model.SkillRAnimLength / _model.SkillRIngameSpeed;
+            _view.SetActionSpeed(speed);
+            
+            _view.TriggerSkillR();
+        }
+    }
     
 }
