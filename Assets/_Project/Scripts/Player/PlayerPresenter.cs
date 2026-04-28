@@ -12,7 +12,7 @@ public class PlayerPresenter : IStartable, ITickable
     private readonly PlayerView _view;
     private readonly PlayerModel _model;
     
-    private Transform _cameraTransform;
+    private Camera _mainCamera;
     
     // 必要な部品を外部から注入 (DI)
     [Inject]
@@ -26,6 +26,10 @@ public class PlayerPresenter : IStartable, ITickable
     // GameLifetimeScopeのEntryPointで StartとTick使用可能
     public void Start() 
     {
+        // 마우스제거 및 위치 가운데로 고정
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+        
         _input.OnJumpEvent += WhenJump;
         _input.OnDashEvent += WhenDash; 
         
@@ -34,7 +38,7 @@ public class PlayerPresenter : IStartable, ITickable
         _input.OnSkillEEvent += WhenSkillE;
         _input.OnSkillREvent += WhenSkillR;
         
-        _cameraTransform = Camera.main.transform;
+        _mainCamera = Camera.main;
     }
 
     // VContainer使う時のupdate
@@ -81,8 +85,8 @@ public class PlayerPresenter : IStartable, ITickable
         
         bool isSprinting = isMoving && _input.IsSprinting;
         
-        Vector3 camForward = _cameraTransform.forward;
-        Vector3 camRight = _cameraTransform.right;
+        Vector3 camForward = _mainCamera.transform.forward;
+        Vector3 camRight = _mainCamera.transform.right;
         
         // Y軸の反映を消す
         camForward.y = 0f;
@@ -159,6 +163,11 @@ public class PlayerPresenter : IStartable, ITickable
         // 쿨타임이 다 찼을 때만 실행
         if (!_model.IsActing && _model.CanAttack) // 쿨타임 다찼을떄, 스킬 사용 중이 아닐떄
         {
+            //캐릭터 방향 전환 
+            Vector3 camForward = _mainCamera.transform.forward;
+            camForward.y = 0f; // 몸 기울지 않게 y는 0
+            _view.transform.forward = camForward.normalized;
+            
             _model.AttackTimer = _model.AttackCooldown; // 타이머 리셋
             _model.ActionTimer = _model.AttackIngameSpeed; //애니메이션 지속시간.동안 다른행동 불가.
             
@@ -166,7 +175,29 @@ public class PlayerPresenter : IStartable, ITickable
             float speed = _model.AttackAnimLength / _model.AttackIngameSpeed;
             _view.SetActionSpeed(speed);
             _view.TriggerAttack(); // 애니메이션 재생
+            
+            Vector3 targetPoint = CalculateTargetPoint(); // 화면의 정중앙 계산.
+            _view.FireProjectile(targetPoint); // 정중앙에 투사체 발사. 
         }
+    }
+    
+    
+    // 정중앙 계산 및 타겟 위치 반환. 
+    private Vector3 CalculateTargetPoint()
+    {
+        // 화면의 정중앙 좌표
+        Vector3 screenCenter = new Vector3(Screen.width / 2f, Screen.height / 2f, 0f);
+        Ray ray = _mainCamera.ScreenPointToRay(screenCenter);
+
+        LayerMask.GetMask("Enemy");
+        
+        // 최대 사거리 100f 안에 적 맞으면 위치 반환 
+        if (Physics.Raycast(ray, out RaycastHit hit, 100f, LayerMask.GetMask("Enemy")))
+        {
+            return hit.point;
+        }
+        // 허공에 쏠때 100 앞 지점 반환. 
+        return ray.GetPoint(20f);
     }
     
     private void WhenSkillQ()
