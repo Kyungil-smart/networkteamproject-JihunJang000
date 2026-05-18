@@ -1,5 +1,3 @@
-//　データ監視
-
 // 데이터 선언. 
 // 고정적인 데이터는 프로퍼티 private set;. 모델은 Monobehaviour 상속을 못받기에 인스펙터 창에서 변수 조절 불가. 
 public class PlayerModel
@@ -7,7 +5,7 @@ public class PlayerModel
     //固定データ
     public float WalkSpeed { get; private set; } = 5.0f; // 나중에 변동 가능할 수도?
     public float RunSpeed { get; set; } = 10.0f;
-    public float JumpHeight { get; private set; } = 1.5f;
+    public float JumpHeight { get; private set; } = 5f;
     public float Gravity { get; private set; } = -9.81f;
     public float DashSpeed { get; private set; } = 20f;
 
@@ -23,10 +21,10 @@ public class PlayerModel
     public bool IsDashing => DashTimer > 0f; //읽기 전용. get DashTimer > 0이랑 비슷. 
 
     // -- 스킬 관련 변수 -- 
-    public float AttackCooldown { get; } = 0.5f; // 평타 간격
-    public float SkillQCooldown { get; } = 3.0f; // Q 쿨타임
-    public float SkillECooldown { get; } = 8.0f; 
-    public float SkillRCooldown { get; } = 15.0f;
+    public float AttackCooldown { get; } = 0.2f; // 평타 간격
+    public float SkillQCooldown { get; } = 2.0f; // Q 쿨타임
+    public float SkillECooldown { get; } = 3.0f; 
+    public float SkillRCooldown { get; } = 4.0f;
     
     // 스킬 애니메이션 실제 속도
     public float AttackAnimLength { get; } = 10/24f; 
@@ -34,8 +32,8 @@ public class PlayerModel
     public float SkillEAnimLength { get; } = 18/24f;
     public float SkillRAnimLength { get; } = 23/24f;
 
-    public float AttackIngameSpeed { get; set; } = 0.6f;
-    public float SkillQIngameSpeed { get; set;} = 1f;
+    public float AttackIngameSpeed { get; set; } = 0.2f;
+    public float SkillQIngameSpeed { get; set;} = 0.6f;
     public float SkillEIngameSpeed { get; set;} = 1f;
     public float SkillRIngameSpeed { get; set;} = 1.5f;
 

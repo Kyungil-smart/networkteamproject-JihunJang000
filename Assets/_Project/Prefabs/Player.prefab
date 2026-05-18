@@ -202,7 +202,11 @@ GameObject:
   - component: {fileID: 4815210427112420}
   - component: {fileID: 95762697582116756}
   - component: {fileID: 2342143558424569565}
+  - component: {fileID: 5693536798606699931}
+  - component: {fileID: 3128651341047131329}
   - component: {fileID: 7631237439471556141}
+  - component: {fileID: 5848627566781369287}
+  - component: {fileID: 2844584203664774099}
   m_Layer: 8
   m_Name: Player
   m_TagString: Untagged
@@ -277,6 +281,45 @@ CharacterController:
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
   m_Center: {x: 0, y: 0.55, z: 0}
+--- !u!114 &5693536798606699931
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1060029176277862}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  GlobalObjectIdHash: 2180414856
+  InScenePlacedSourceGlobalObjectIdHash: 1061533677
+  DeferredDespawnTick: 0
+  Ownership: 1
+  AlwaysReplicateAsRoot: 0
+  SynchronizeTransform: 1
+  ActiveSceneSynchronization: 0
+  SceneMigrationSynchronization: 0
+  SpawnWithObservers: 1
+  DontDestroyWithOwner: 0
+  AutoObjectParentSync: 1
+  SyncOwnerTransformWhenParented: 1
+  AllowOwnerToParent: 0
+--- !u!114 &3128651341047131329
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1060029176277862}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e8a27948f31356248b45994d9c0becd1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
+  _view: {fileID: 7631237439471556141}
 --- !u!114 &7631237439471556141
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -289,9 +332,124 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2dc5de72322fc4c4998b3c76d6327c82, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
   _controller: {fileID: 2342143558424569565}
   _projectilePrefab: {fileID: 2547220641290150496, guid: 492dce1d0c1bc3c438f656927643d4eb, type: 3}
   _projectileSpawn: {fileID: 8038432611265604133}
+  _pool: {fileID: 0}
+  _skillQIceOrbPrefab: {fileID: 6381330198660330156, guid: ac006c809e3338248846ccdc83676c97, type: 3}
+  _skillEFireballPrefab: {fileID: 5540436495126405236, guid: 4770b7878a4f26a49a0dc32cd2b8da2a, type: 3}
+  _skillRWavePrefab: {fileID: 3933935865020595828, guid: 6e008f4d27a7f424592a2c8f3f1c0738, type: 3}
+--- !u!114 &5848627566781369287
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1060029176277862}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: da52bf8bbc1de48cfb221a6ff30f7972, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
+  NetworkTransformExpanded: 1
+  AutoOwnerAuthorityTickOffset: 1
+  PositionInterpolationType: 0
+  RotationInterpolationType: 0
+  ScaleInterpolationType: 0
+  PositionLerpSmoothing: 1
+  PositionMaxInterpolationTime: 0.1
+  RotationLerpSmoothing: 1
+  RotationMaxInterpolationTime: 0.1
+  ScaleLerpSmoothing: 1
+  ScaleMaxInterpolationTime: 0.1
+  AuthorityMode: 1
+  TickSyncChildren: 0
+  UseUnreliableDeltas: 0
+  SyncPositionX: 1
+  SyncPositionY: 1
+  SyncPositionZ: 1
+  SyncRotAngleX: 1
+  SyncRotAngleY: 1
+  SyncRotAngleZ: 1
+  SyncScaleX: 1
+  SyncScaleY: 1
+  SyncScaleZ: 1
+  PositionThreshold: 0.001
+  RotAngleThreshold: 0.01
+  ScaleThreshold: 0.01
+  UseQuaternionSynchronization: 0
+  UseQuaternionCompression: 0
+  UseHalfFloatPrecision: 0
+  InLocalSpace: 0
+  SwitchTransformSpaceWhenParented: 0
+  Interpolate: 1
+  SlerpPosition: 0
+--- !u!114 &2844584203664774099
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1060029176277862}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e402c7046ee79db48a062f5bafe32536, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
+  NetworkAnimatorExpanded: 0
+  AuthorityMode: 0
+  m_Animator: {fileID: 95762697582116756}
+  TransitionStateInfoList: []
+  AnimatorParameterEntries:
+    ParameterEntries:
+    - name: animation
+      NameHash: -1923971876
+      Synchronize: 1
+      ParameterType: 3
+    - name: IsMoving
+      NameHash: 120489994
+      Synchronize: 1
+      ParameterType: 4
+    - name: DashTrigger
+      NameHash: -1314317970
+      Synchronize: 1
+      ParameterType: 9
+    - name: JumpTrigger
+      NameHash: 113680519
+      Synchronize: 1
+      ParameterType: 9
+    - name: IsSprinting
+      NameHash: -980523212
+      Synchronize: 1
+      ParameterType: 4
+    - name: IsGrounded
+      NameHash: 507951781
+      Synchronize: 1
+      ParameterType: 4
+    - name: AttackTrigger
+      NameHash: -1742204373
+      Synchronize: 0
+      ParameterType: 9
+    - name: SkillQTrigger
+      NameHash: 1775759663
+      Synchronize: 0
+      ParameterType: 9
+    - name: SkillETrigger
+      NameHash: -1859727618
+      Synchronize: 0
+      ParameterType: 9
+    - name: SkillRTrigger
+      NameHash: -413600052
+      Synchronize: 0
+      ParameterType: 9
+    - name: ActionSpeed
+      NameHash: 1673499952
+      Synchronize: 1
+      ParameterType: 1
+  AnimatorParametersExpanded: 0
 --- !u!1 &1061156421552890
 GameObject:
   m_ObjectHideFlags: 0
