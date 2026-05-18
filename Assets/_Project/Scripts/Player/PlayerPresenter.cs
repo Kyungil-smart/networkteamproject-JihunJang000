@@ -14,7 +14,6 @@ public class PlayerPresenter : IStartable, ITickable
     
     private Camera _mainCamera;
     
-    // 必要な部品を外部から注入 (DI)
     [Inject]
     public PlayerPresenter(IInputProvider input, PlayerView view, PlayerModel model)
     {
@@ -23,30 +22,40 @@ public class PlayerPresenter : IStartable, ITickable
         _model = model;
     }
 
-    // GameLifetimeScopeのEntryPointで StartとTick使用可能
     public void Start() 
     {
-        // 마우스제거 및 위치 가운데로 고정
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
-        
-        _input.OnJumpEvent += WhenJump;
-        _input.OnDashEvent += WhenDash; 
-        
-        _input.OnBasicAttackEvent += WhenAttack;
-        _input.OnSkillQEvent += WhenSkillQ;
-        _input.OnSkillEEvent += WhenSkillE;
-        _input.OnSkillREvent += WhenSkillR;
-        
-        _mainCamera = Camera.main;
+        // 카메라 세팅은 Owner일 때만 수행
+        if (_view.IsOwner)
+        {
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+            
+            _mainCamera = Camera.main;
+            
+            // 시네머신 타겟을 나로 설정
+            var freeLookCamera = Object.FindFirstObjectByType<Unity.Cinemachine.CinemachineCamera>();
+            if (freeLookCamera != null)
+            {
+                Transform cameraFocus = _view.transform.Find("Camera_Focus");
+                freeLookCamera.Target.TrackingTarget = cameraFocus != null ? cameraFocus : _view.transform;
+            }
+            
+            // 내 캐릭터일 때만 입력 이벤트를 구독
+            _input.OnJumpEvent += WhenJump;
+            _input.OnDashEvent += WhenDash; 
+            _input.OnBasicAttackEvent += WhenAttack;
+            _input.OnSkillQEvent += WhenSkillQ;
+            _input.OnSkillEEvent += WhenSkillE;
+            _input.OnSkillREvent += WhenSkillR;
+        }
     }
 
-    // VContainer使う時のupdate
     public void Tick()
     {
-        // 重力はダッシュ中, スタン中に関わらず常に計算する
+        // 도플갱어 방지 코드. 내 캐릭터가 아니면 로직을 실행X
+        if (!_view.IsOwner) return;
+
         ApplyGravity();
-        
         UpdateTimers();
         
         if (_model.IsDashing)
@@ -55,9 +64,6 @@ public class PlayerPresenter : IStartable, ITickable
             return;
         }
         
-        
-
-        // 通常の移動処理
         ApplyMovement();
     }
     
@@ -78,6 +84,17 @@ public class PlayerPresenter : IStartable, ITickable
     // 通常の移動とスプリント処理
     private void ApplyMovement()
     {
+        if (_model.IsActing)
+        {
+            // 공중에 있을 때를 대비해 중력만 적용하고 제자리에 멈춤
+            Vector3 gravityOnly = Vector3.up * _model.VerticalVelocity;
+            _view.Move(gravityOnly);
+            
+            // 이동 애니메이션도 강제로 종료 
+            _view.SetMovingAnimation(false); 
+            _view.SetSprintingAnimation(false);
+            return; // 아래쪽의 WASD 이동 로직을 실행하지 않고 함수를 빠져나갑니다.
+        }
         
         Vector2 inputDir = _input.MoveDirection;
         
@@ -177,7 +194,7 @@ public class PlayerPresenter : IStartable, ITickable
             _view.TriggerAttack(); // 애니메이션 재생
             
             Vector3 targetPoint = CalculateTargetPoint(); // 화면의 정중앙 계산.
-            _view.FireProjectile(targetPoint); // 정중앙에 투사체 발사. 
+            _view.FireProjectileServerRpc(targetPoint); // 정중앙에 투사체 발사. 
         }
     }
     
@@ -200,46 +217,89 @@ public class PlayerPresenter : IStartable, ITickable
         return ray.GetPoint(20f);
     }
     
-    private void WhenSkillQ()
+    private void WhenSkillQ() 
     {
         if (!_model.IsActing && _model.CanUseQ)
         {
+            FaceToCamera();
+
             _model.SkillQTimer = _model.SkillQCooldown;
             _model.ActionTimer = _model.SkillQIngameSpeed;
             
             float speed = _model.SkillQAnimLength / _model.SkillQIngameSpeed;
             _view.SetActionSpeed(speed);
-            
             _view.TriggerSkillQ();
+            
+            Vector3 targetPoint = CalculateTargetPoint();
+            _view.SkillQServerRpc();
+
+            // UI 매니저에게 Q 쿨타임 연출 시작 명령
+            if (InGameUIPresenter.Instance != null) 
+                InGameUIPresenter.Instance.TriggerSkillCooldown(0, _model.SkillQCooldown);
         }
     }
-    
-    private void WhenSkillE()
+
+    private void WhenSkillE() 
     {
         if (!_model.IsActing && _model.CanUseE)
         {
+            FaceToCamera();
+
             _model.SkillETimer = _model.SkillECooldown;
             _model.ActionTimer = _model.SkillEIngameSpeed;
             
             float speed = _model.SkillEAnimLength / _model.SkillEIngameSpeed;
             _view.SetActionSpeed(speed);
-            
             _view.TriggerSkillE();
+            
+            Vector3 targetPoint = CalculateTargetPoint();
+            _view.SkillEServerRpc(targetPoint);
+            
+            if (InGameUIPresenter.Instance != null) 
+                InGameUIPresenter.Instance.TriggerSkillCooldown(1, _model.SkillECooldown);
         }
     }
-    
+
     private void WhenSkillR()
     {
         if (!_model.IsActing && _model.CanUseR)
         {
+            Vector3 groundPoint = CalculateGroundPoint();
+
             _model.SkillRTimer = _model.SkillRCooldown;
             _model.ActionTimer = _model.SkillRIngameSpeed;
-            
+
             float speed = _model.SkillRAnimLength / _model.SkillRIngameSpeed;
             _view.SetActionSpeed(speed);
-            
             _view.TriggerSkillR();
+
+            _view.SkillRServerRpc(groundPoint);
+            
+            if (InGameUIPresenter.Instance != null)
+                InGameUIPresenter.Instance.TriggerSkillCooldown(2, _model.SkillRCooldown);
         }
+    }
+
+    // 카메라 정면으로 캐릭터 돌리기
+    private void FaceToCamera()
+    {
+        Vector3 camForward = _mainCamera.transform.forward;
+        camForward.y = 0f;
+        _view.transform.forward = camForward.normalized;
+    }
+
+    // R스킬용 바닥 좌표 구하기
+    private Vector3 CalculateGroundPoint()
+    {
+        Vector3 screenCenter = new Vector3(Screen.width / 2f, Screen.height / 2f, 0f);
+        Ray ray = _mainCamera.ScreenPointToRay(screenCenter);
+        
+        if (Physics.Raycast(ray, out RaycastHit hit, 100f, LayerMask.GetMask("Ground")))
+        {
+            return hit.point;
+        }
+        // 허공을 바라보고 썼을 경우, 캐릭터 앞 5m 지점을 기본값으로 반환
+        return _view.transform.position + (_view.transform.forward * 5f); 
     }
     
 }
